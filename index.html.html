@@ -845,7 +845,7 @@ textarea.di{height:auto;padding:5px 8px;resize:vertical;}
 const STORE        = 'fabV3';
 const GDRIVE_FILE  = 'tibrazie_fab_data.json';
 const GSCOPE       = 'https://www.googleapis.com/auth/drive.appdata';
-const GCLIENT_ID   = '650founding-client'; // remplacé dynamiquement — voir note
+const GCLIENT_ID   = '1012149448420-s26l1ch6moktoab5tpjtea77imf8b5vk.apps.googleusercontent.com';
 // On utilise l'API REST Drive v3 avec token OAuth2 via Google Identity Services (GIS)
 
 let syncTimer=null, isSyncing=false;
@@ -870,11 +870,10 @@ function initGIS(){
 }
 
 function _initGISClient(){
-  const clientId=localStorage.getItem('g_client_id')||'';
+  const clientId=GCLIENT_ID;
   if(!clientId){
-    // Pas encore de Client ID configuré → afficher le bouton de connexion avec saisie
     document.getElementById('btn-glogin').style.display='inline-block';
-    ss('off','Cliquez sur "Connecter Google Drive"');
+    ss('off','Client ID manquant');
     return;
   }
   gTokenClient=google.accounts.oauth2.initTokenClient({
@@ -906,23 +905,6 @@ function _initGISClient(){
 }
 
 function gLogin(){
-  // Si pas de Client ID → demander à l'utilisateur de le saisir
-  const stored=localStorage.getItem('g_client_id')||'';
-  if(!stored){
-    const id=prompt(
-      '📋 Pour connecter Google Drive, il faut un Client ID Google OAuth.\n\n'+
-      'Étapes :\n'+
-      '1. Allez sur console.cloud.google.com\n'+
-      '2. Créez un projet → APIs → Drive API → Identifiants\n'+
-      '3. Créez un ID client OAuth (type : Application Web)\n'+
-      '4. Ajoutez votre URL en "Origines autorisées"\n'+
-      '5. Copiez l\'ID client ici :\n',''
-    );
-    if(!id||!id.trim())return;
-    localStorage.setItem('g_client_id',id.trim());
-    location.reload();
-    return;
-  }
   if(gTokenClient)gTokenClient.requestAccessToken({prompt:'consent'});
   else initGIS();
 }
